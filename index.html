@@ -258,6 +258,22 @@ section[id] { scroll-margin-top: 64px; }
 .grid figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
 .grid .empty-slot { aspect-ratio: 4 / 3; }
 
+.albums-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.album-card { font: inherit; color: var(--ink); text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0 0 14px; cursor: pointer; overflow: hidden; display: flex; flex-direction: column; gap: 2px; }
+.album-card:hover { border-color: var(--dawn); }
+.album-cover { position: relative; display: block; aspect-ratio: 4 / 3; background: var(--paper); margin-bottom: 10px; }
+.album-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.album-count { position: absolute; right: 8px; bottom: 8px; font-size: 12px; font-weight: 600; background: rgba(20,28,40,.72); color: #fff; padding: 2px 8px; border-radius: 999px; }
+.album-title { font-weight: 600; font-size: 16px; padding: 0 14px; line-height: 1.4; }
+.album-date { font-size: 13px; color: var(--muted); padding: 0 14px; font-variant-numeric: tabular-nums; }
+.more-btn, .back-btn { font: inherit; font-size: 15px; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.more-btn { grid-column: 1 / -1; justify-self: center; }
+.album-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 20px; }
+.album-head h3 { font-size: 22px; }
+dialog.viewer .nav { position: fixed; top: 50%; transform: translateY(-50%); font: inherit; font-size: 40px; line-height: 1; width: 52px; height: 64px; border: none; border-radius: 8px; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; }
+dialog.viewer .nav.prev { left: 12px; } dialog.viewer .nav.next { right: 12px; }
+dialog.viewer .nav[hidden] { display: none; }
+
 /* 사진 크게 보기 */
 dialog.viewer { border: none; padding: 0; background: transparent; max-width: min(96vw, 1100px); max-height: 94vh; }
 dialog.viewer::backdrop { background: rgba(10, 14, 20, .86); }
@@ -451,6 +467,7 @@ footer b { font-family: var(--font-display); color: #f4efe6; font-size: 17px; }
         <span class="muted">매주 주일 주보와 광고를 올립니다</span>
       </div>
       <div id="news-list"></div>
+      <p class="note">2026년 8월 이전 주보는 <a href="https://fkpca.tistory.com/category/%EA%B5%90%ED%9A%8C%20%EC%86%8C%EC%8B%9D/%EA%B5%90%ED%9A%8C%20%EC%A3%BC%EB%B3%B4">교회 블로그</a>에서 보실 수 있습니다.</p>
     </div>
   </section>
 
@@ -459,6 +476,7 @@ footer b { font-family: var(--font-display); color: #f4efe6; font-size: 17px; }
       <p class="label">Gallery</p>
       <h2>교회 갤러리</h2>
       <div class="albums" id="albums" role="group" aria-label="앨범 선택"></div>
+      <div class="album-head" id="album-head" hidden></div>
       <div class="grid" id="gallery-grid"></div>
     </div>
   </section>
@@ -545,10 +563,13 @@ footer b { font-family: var(--font-display); color: #f4efe6; font-size: 17px; }
 
 <dialog class="viewer" id="viewer" aria-label="사진 크게 보기">
   <button class="close" type="button" id="viewer-close">닫기 ✕</button>
+  <button class="nav prev" type="button" id="viewer-prev" aria-label="이전 사진">‹</button>
   <img id="viewer-img" alt="">
+  <button class="nav next" type="button" id="viewer-next" aria-label="다음 사진">›</button>
   <p id="viewer-cap"></p>
 </dialog>
 
+<script src="gallery/albums.js"></script>
 <script>
 /* ================================================================
    매주 바꾸는 곳 ① 교회소식 · 주보
@@ -579,6 +600,42 @@ var NEWS = [
       ["14일(토)", "렘 39, 52, 40장"]
     ],
     pages: ["bulletin/2026-11-08-1.jpg", "bulletin/2026-11-08-2.jpg"]
+  },
+  {
+    date: "2026-11-01",
+    pages: ["bulletin/2026-11-01.jpg"]
+  },
+  {
+    date: "2026-10-25",
+    pages: ["bulletin/2026-10-25.jpg"]
+  },
+  {
+    date: "2026-10-18",
+    pages: ["bulletin/2026-10-18.jpg"]
+  },
+  {
+    date: "2026-10-11",
+    pages: ["bulletin/2026-10-11.jpg"]
+  },
+  {
+    date: "2026-09-27",
+    pages: ["bulletin/2026-09-27.jpg"]
+  },
+  {
+    date: "2026-09-06",
+    pages: ["bulletin/2026-09-06.jpg"]
+  },
+  {
+    date: "2026-08-30",
+    pages: ["bulletin/2026-08-30.jpg"]
+  },
+  {
+    date: "2026-08-23",
+    pages: ["bulletin/2026-08-23.jpg"]
+  },
+  {
+    date: "2026-08-16",
+    pages: ["bulletin/2026-08-16.jpg"]
   }
 ];
 
@@ -605,11 +662,10 @@ var COLUMNS = [
 ];
 
 /* ================================================================
-   매주 바꾸는 곳 ② 갤러리
-   - album: 앨범 이름 (같은 이름끼리 묶여 버튼이 생깁니다)
-   - src: 사진 파일 경로 (gallery/ 폴더), caption: 사진 설명
+   매주 바꾸는 곳 ② 갤러리 → gallery/albums.js 파일에 있습니다.
+   앨범 하나 = { title, date, photos: ["gallery/폴더/01.jpg", ...] }
    ================================================================ */
-var GALLERY = [];
+var ALBUMS = window.ALBUMS || [];
 
 (function () {
   var DOW = ["주일", "월", "화", "수", "목", "금", "토"];
@@ -624,20 +680,24 @@ var GALLERY = [];
     return p[0] + "년 " + p[1] + "월 " + p[2] + "일" + (d.getUTCDay() === 0 ? " 주일" : " (" + DOW[d.getUTCDay()] + ")");
   }
 
-  // 사진 크게 보기
-  var dlg = document.getElementById("viewer");
-  function openViewer(src, cap) {
-    document.getElementById("viewer-img").src = src;
-    document.getElementById("viewer-img").alt = cap || "";
-    document.getElementById("viewer-cap").textContent = cap || "";
-    try { dlg.showModal(); } catch (e) { dlg.setAttribute("open", ""); }
-  }
+  // 사진 크게 보기 (이전/다음 넘기기)
+  var dlg = document.getElementById("viewer"), vImg = document.getElementById("viewer-img"), vCap = document.getElementById("viewer-cap");
+  var vList = [], vIdx = 0;
+  function showV() { var it = vList[vIdx]; vImg.src = it.src; vImg.alt = it.cap || ""; vCap.textContent = (it.cap || "") + (vList.length > 1 ? "  (" + (vIdx + 1) + " / " + vList.length + ")" : ""); 
+    document.getElementById("viewer-prev").hidden = document.getElementById("viewer-next").hidden = vList.length < 2; }
+  function openViewer(list, idx) { vList = list; vIdx = idx || 0; showV(); try { dlg.showModal(); } catch (e) { dlg.setAttribute("open", ""); } }
+  function step(n) { if (!vList.length) return; vIdx = (vIdx + n + vList.length) % vList.length; showV(); }
   document.getElementById("viewer-close").addEventListener("click", function () { dlg.close ? dlg.close() : dlg.removeAttribute("open"); });
+  document.getElementById("viewer-prev").addEventListener("click", function (e) { e.stopPropagation(); step(-1); });
+  document.getElementById("viewer-next").addEventListener("click", function (e) { e.stopPropagation(); step(1); });
   dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
-  function thumb(src, cap) {
+  dlg.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); });
+  var tx = null; dlg.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; }, { passive: true });
+  dlg.addEventListener("touchend", function (e) { if (tx == null) return; var dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); tx = null; });
+  function thumb(src, cap, list, idx) {
     var b = el("button", "thumb"); b.type = "button"; b.setAttribute("aria-label", (cap || "사진") + " 크게 보기");
     var i = el("img"); i.src = src; i.alt = cap || ""; i.loading = "lazy"; b.appendChild(i);
-    b.addEventListener("click", function () { openViewer(src, cap); });
+    b.addEventListener("click", function () { openViewer(list || [{ src: src, cap: cap }], idx || 0); });
     return b;
   }
 
@@ -664,7 +724,8 @@ var GALLERY = [];
     var right = el("div");
     right.appendChild(el("h3", null, "주보"));
     var pg = el("div", "pages");
-    if (w.pages && w.pages.length) w.pages.forEach(function (src, k) { pg.appendChild(thumb(src, fmtDate(w.date) + " 주보 " + (k + 1) + "면")); });
+    if (w.pages && w.pages.length) { var pl = w.pages.map(function (src, k) { return { src: src, cap: fmtDate(w.date) + " 주보" + (w.pages.length > 1 ? " " + (k + 1) + "면" : "") }; });
+      pl.forEach(function (it, k) { pg.appendChild(thumb(it.src, it.cap, pl, k)); }); }
     else pg.appendChild(el("div", "empty-slot", "주보 사진이 이곳에 올라갑니다"));
     right.appendChild(pg);
     if (w.reading && w.reading.length) {
@@ -692,33 +753,47 @@ var GALLERY = [];
     clist.appendChild(d);
   });
 
-  // 갤러리 그리기
-  var grid = document.getElementById("gallery-grid"), albumsBox = document.getElementById("albums");
-  var albums = []; GALLERY.forEach(function (g) { if (albums.indexOf(g.album) < 0) albums.push(g.album); });
-  function drawGallery(album) {
-    grid.innerHTML = "";
-    var items = GALLERY.filter(function (g) { return !album || g.album === album; });
-    if (!items.length) {
-      ["예배", "교제", "행사"].forEach(function (t) { grid.appendChild(el("div", "empty-slot", t + " 사진이 이곳에 올라갑니다")); });
-      return;
-    }
-    items.forEach(function (g) {
-      var f = el("figure"); f.appendChild(thumb(g.src, g.caption));
-      if (g.caption) f.appendChild(el("figcaption", null, g.caption));
-      grid.appendChild(f);
-    });
-  }
-  if (albums.length > 1) {
-    ["전체"].concat(albums).forEach(function (a, i) {
-      var b = el("button", null, a); b.type = "button"; b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
-      b.addEventListener("click", function () {
-        albumsBox.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
-        b.setAttribute("aria-pressed", "true"); drawGallery(i === 0 ? null : a);
-      });
+  // 갤러리 그리기: 연도 선택 → 앨범 목록 → 앨범 사진
+  var grid = document.getElementById("gallery-grid"), albumsBox = document.getElementById("albums"), head = document.getElementById("album-head");
+  var years = []; ALBUMS.forEach(function (a) { var y = a.date.slice(0, 4); if (years.indexOf(y) < 0) years.push(y); });
+  var curYear = null, shown = 12;
+  function ymd(s) { var p = s.split("-").map(Number); return p[0] + "년 " + p[1] + "월 " + p[2] + "일"; }
+  function drawYears() {
+    albumsBox.innerHTML = "";
+    if (years.length < 2) { albumsBox.style.display = "none"; return; }
+    [null].concat(years).forEach(function (y) {
+      var b = el("button", null, y ? y + "년" : "전체"); b.type = "button"; b.setAttribute("aria-pressed", String(y === curYear));
+      b.addEventListener("click", function () { curYear = y; shown = 12; drawYears(); drawAlbums(); });
       albumsBox.appendChild(b);
     });
-  } else { albumsBox.style.display = "none"; }
-  drawGallery(null);
+  }
+  function drawAlbums() {
+    head.innerHTML = ""; head.hidden = true; albumsBox.style.display = years.length < 2 ? "none" : "";
+    grid.className = "grid albums-grid"; grid.innerHTML = "";
+    if (!ALBUMS.length) { ["예배", "교제", "행사"].forEach(function (t) { grid.appendChild(el("div", "empty-slot", t + " 사진이 이곳에 올라갑니다")); }); return; }
+    var list = ALBUMS.filter(function (a) { return !curYear || a.date.slice(0, 4) === curYear; });
+    list.slice(0, shown).forEach(function (a) {
+      var card = el("button", "album-card"); card.type = "button";
+      var cov = el("span", "album-cover"); var im = el("img"); im.src = a.photos[0]; im.alt = ""; im.loading = "lazy"; cov.appendChild(im);
+      cov.appendChild(el("span", "album-count", a.photos.length + "장")); card.appendChild(cov);
+      card.appendChild(el("span", "album-title", a.title)); card.appendChild(el("span", "album-date", ymd(a.date)));
+      card.addEventListener("click", function () { drawAlbum(a); document.getElementById("gallery").scrollIntoView({ behavior: "smooth" }); });
+      grid.appendChild(card);
+    });
+    if (list.length > shown) {
+      var more = el("button", "more-btn", "앨범 더 보기 (" + (list.length - shown) + "개 더)"); more.type = "button";
+      more.addEventListener("click", function () { shown += 12; drawAlbums(); }); grid.appendChild(more);
+    }
+  }
+  function drawAlbum(a) {
+    albumsBox.style.display = "none"; head.hidden = false; head.innerHTML = "";
+    var back = el("button", "back-btn", "← 앨범 목록"); back.type = "button"; back.addEventListener("click", function () { drawAlbums(); document.getElementById("gallery").scrollIntoView({ behavior: "smooth" }); });
+    head.appendChild(back); head.appendChild(el("h3", null, a.title)); head.appendChild(el("span", "muted", ymd(a.date) + " · " + a.photos.length + "장"));
+    grid.className = "grid"; grid.innerHTML = "";
+    var vl = a.photos.map(function (p) { return { src: p, cap: a.title }; });
+    vl.forEach(function (it, k) { var f = el("figure"); f.appendChild(thumb(it.src, it.cap, vl, k)); grid.appendChild(f); });
+  }
+  drawYears(); drawAlbums();
 })();
 
 (function () {
