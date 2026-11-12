@@ -2,6 +2,13 @@
    { title: "앨범 이름", date: "YYYY-MM-DD", photos: ["gallery/폴더/01.jpg", ...] } */
 window.ALBUMS = [
  {
+  "title": "이경수(구교명) 가정 이은율 처음 교회 나온 날",
+  "date": "2026-09-08",
+  "photos": [
+   "gallery/2026-09-08-firstday/01.jpg"
+  ]
+ },
+ {
   "title": "장로님 가정 이사 감사예배",
   "date": "2026-08-31",
   "photos": [
