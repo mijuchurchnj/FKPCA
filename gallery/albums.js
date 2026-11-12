@@ -2,6 +2,14 @@
    { title: "앨범 이름", date: "YYYY-MM-DD", photos: ["gallery/폴더/01.jpg", ...] } */
 window.ALBUMS = [
  {
+  "title": "주일 성찬식과 특송",
+  "date": "2026-10-18",
+  "photos": [
+   "gallery/2026-10-18-communion/01.jpg",
+   "gallery/2026-10-18-communion/02.jpg"
+  ]
+ },
+ {
   "title": "이은율 백일 잔치",
   "date": "2026-10-14",
   "photos": [
