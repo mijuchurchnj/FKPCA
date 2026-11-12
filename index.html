@@ -203,6 +203,8 @@ img.portrait { display: block; width: 100%; height: auto; object-fit: cover; }
 .contact li > span:first-child { font-size: 14px; color: var(--muted); }
 .copy { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 6px; padding: 2px 8px; margin-left: 6px; cursor: pointer; }
 .copy:hover { border-color: var(--dawn); }
+.post-copy { font: inherit; font-size: 13px; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 6px; padding: 3px 10px; cursor: pointer; word-break: break-all; }
+.post-copy:hover { border-color: var(--dawn); }
 .card .btn.solid { background: var(--ink); color: var(--paper); margin-top: 4px; }
 
 .subnav { display: flex; flex-wrap: wrap; gap: 8px; margin: -8px 0 28px; }
@@ -249,6 +251,23 @@ section[id] { scroll-margin-top: 64px; }
 .column-body .col-sub { color: var(--muted); font-family: var(--font-display); font-size: 18px; margin: 0 0 18px; }
 .column-body .col-h { font-family: var(--font-display); font-size: 19px; margin: 26px 0 10px; max-width: 34em; }
 .column-body p { max-width: 40em; font-size: 16.5px; line-height: 1.9; }
+
+/* 게시판 */
+.post summary { align-items: center; }
+.post .cat { font-size: 12.5px; font-weight: 600; padding: 2px 10px; border-radius: 999px; background: var(--dawn-soft); color: var(--dawn); white-space: nowrap; }
+.post .cat.mission { background: #dfeaf7; color: #2f5ea8; }
+:root[data-theme="dark"] .post .cat.mission { background: #1e2f45; color: #9fc0f0; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .post .cat.mission { background: #1e2f45; color: #9fc0f0; } }
+.post .ptitle { font-weight: 600; font-size: 17px; flex: 1 1 14em; min-width: 0; }
+.post .pdate { font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.post .pin { font-size: 12px; color: var(--dawn); font-weight: 600; }
+.post-body { padding: 16px 22px 20px; border-top: 1px solid var(--line); }
+.post-body p { max-width: 40em; margin: 0 0 12px; font-size: 16px; line-height: 1.85; }
+.post-body .col-h { font-family: var(--font-display); font-size: 18px; margin: 22px 0 8px; }
+.post-body .pages { margin: 14px 0; }
+.post-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 16px; font-size: 14px; color: var(--muted); }
+.post-links { display: grid; gap: 6px; margin: 10px 0; }
+.board-empty { padding: 28px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 10px; }
 
 /* 갤러리 */
 .albums { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
@@ -361,6 +380,7 @@ footer b { font-family: var(--font-display); color: #f4efe6; font-size: 17px; }
       <a href="#worship">예배 안내</a>
       <a href="#column">목회 칼럼</a>
       <a href="#news">교회소식</a>
+      <a href="#board">게시판</a>
       <a href="#gallery">갤러리</a>
       <a href="#newcomers">새가족</a>
       <a href="#offering">헌금</a>
@@ -504,6 +524,18 @@ footer b { font-family: var(--font-display); color: #f4efe6; font-size: 17px; }
     </div>
   </section>
 
+  <section id="board">
+    <div class="wrap">
+      <p class="label">Board</p>
+      <div class="news-head">
+        <h2>게시판</h2>
+        <span class="muted">공지, 선교사님 편지, 교회 자료를 올립니다</span>
+      </div>
+      <div class="albums" id="board-cats" role="group" aria-label="게시판 분류"></div>
+      <div id="board-list"></div>
+    </div>
+  </section>
+
   <section id="gallery">
     <div class="wrap">
       <p class="label">Gallery</p>
@@ -604,6 +636,7 @@ footer b { font-family: var(--font-display); color: #f4efe6; font-size: 17px; }
 
 <script src="gallery/albums.js"></script>
 <script src="columns/columns.js"></script>
+<script src="board/posts.js"></script>
 <script>
 /* ================================================================
    매주 바꾸는 곳 ① 교회소식 · 주보
@@ -775,6 +808,49 @@ var ALBUMS = window.ALBUMS || [];
     d.appendChild(c);
     clist.appendChild(d);
   });
+
+  // 게시판 그리기
+  var POSTS = (window.POSTS || []).slice().sort(function (a, b) { return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (a.date < b.date ? 1 : -1); });
+  var bList = document.getElementById("board-list"), bCats = document.getElementById("board-cats"), bCat = null;
+  var CATS = ["공지", "선교 편지", "자료", "나눔"];
+  function drawCats() {
+    bCats.innerHTML = "";
+    [null].concat(CATS).forEach(function (c) {
+      var n = POSTS.filter(function (p) { return !c || p.category === c; }).length;
+      var b = el("button", null, (c || "전체") + (n ? " " + n : "")); b.type = "button"; b.setAttribute("aria-pressed", String(c === bCat));
+      b.addEventListener("click", function () { bCat = c; drawCats(); drawPosts(); }); bCats.appendChild(b);
+    });
+  }
+  function drawPosts(openId) {
+    bList.innerHTML = "";
+    var list = POSTS.filter(function (p) { return !bCat || p.category === bCat; });
+    if (!list.length) { bList.appendChild(el("div", "board-empty", (bCat === "선교 편지" ? "선교사님 편지가" : "글이") + " 이곳에 올라갑니다.")); return; }
+    list.forEach(function (p) {
+      var d = el("details", "week post"); d.id = "post-" + p.id; if (p.id === openId) d.open = true;
+      var s = el("summary");
+      s.appendChild(el("span", "cat" + (p.category === "선교 편지" ? " mission" : ""), p.category));
+      s.appendChild(el("span", "ptitle", p.title));
+      if (p.pinned) s.appendChild(el("span", "pin", "고정"));
+      s.appendChild(el("span", "pdate", p.date.replace(/-/g, ".")));
+      d.appendChild(s);
+      var bd = el("div", "post-body");
+      (p.body || []).forEach(function (t) { if (t.indexOf("## ") === 0) bd.appendChild(el("h4", "col-h", t.slice(3))); else bd.appendChild(rich("p", t)); });
+      if (p.images && p.images.length) { var g = el("div", "pages"); var vl = p.images.map(function (src) { return { src: src, cap: p.title }; }); vl.forEach(function (it, k) { g.appendChild(thumb(it.src, it.cap, vl, k)); }); bd.appendChild(g); }
+      if (p.links && p.links.length) { var lk = el("div", "post-links"); p.links.forEach(function (l) { var a = el("a", null, l[0]); a.href = l[1]; lk.appendChild(a); }); bd.appendChild(lk); }
+      var meta = el("div", "post-meta"); meta.appendChild(el("span", null, (p.author ? p.author + " · " : "") + fmtDate(p.date)));
+      var cp = el("button", "post-copy", "이 글 링크 복사"); cp.type = "button";
+      cp.addEventListener("click", function () { var url = location.origin + location.pathname + "#post-" + p.id;
+        try { navigator.clipboard.writeText(url).then(function () { cp.textContent = "복사됨 · 카톡에 붙여 넣으세요"; }, function () { cp.textContent = url; }); } catch (e) { cp.textContent = url; } });
+      meta.appendChild(cp); bd.appendChild(meta); d.appendChild(bd); bList.appendChild(d);
+    });
+  }
+  function openFromHash() {
+    var h = location.hash.slice(1); if (h.indexOf("post-") !== 0) return;
+    var id = h.slice(5); if (!POSTS.some(function (p) { return p.id === id; })) return;
+    bCat = null; drawCats(); drawPosts(id);
+    var t = document.getElementById(h); if (t) setTimeout(function () { t.scrollIntoView({ block: "start" }); }, 50);
+  }
+  drawCats(); drawPosts(); openFromHash(); window.addEventListener("hashchange", openFromHash);
 
   // 갤러리 그리기: 연도 선택 → 앨범 목록 → 앨범 사진
   var grid = document.getElementById("gallery-grid"), albumsBox = document.getElementById("albums"), head = document.getElementById("album-head");
