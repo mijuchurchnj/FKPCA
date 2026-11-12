@@ -296,6 +296,37 @@ dialog.viewer .close { position: fixed; top: 14px; right: 16px; font: inherit; f
   .week-body, .offering { grid-template-columns: 1fr; gap: 8px; }
 }
 
+
+/* ===== 행사 팝업 (추수감사주일) ===== */
+dialog.promo { border: none; padding: 0; background: transparent; width: min(92vw, 420px); max-height: 92vh; overflow: visible; }
+dialog.promo::backdrop { background: rgba(18, 12, 8, .62); }
+.promo-card { position: relative; border-radius: 16px; overflow: hidden; color: #fbf1e2;
+  background: radial-gradient(120% 70% at 50% 0%, #a8532a 0%, #7a2e1d 45%, #4a1a14 100%); box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+.promo-art { display: block; width: 100%; height: auto; }
+.promo-body { padding: 4px 26px 22px; text-align: center; }
+.promo-kicker { font-size: 13px; letter-spacing: .16em; color: #f3c98b; margin: 0 0 6px; }
+.promo-title { font-family: var(--font-display); font-size: 40px; line-height: 1.15; margin: 0; color: #fff6e6; }
+.promo-sub { font-family: var(--font-display); font-size: 18px; margin: 8px 0 18px; color: #f6dcb4; }
+.promo-when { display: grid; gap: 2px; background: rgba(255, 240, 215, .12); border: 1px solid rgba(255, 220, 170, .35); border-radius: 12px; padding: 14px 12px; margin-bottom: 14px; }
+.promo-when b { font-size: 22px; font-variant-numeric: tabular-nums; color: #fff; }
+.promo-when span { font-size: 15px; color: #f6dcb4; }
+.promo-tags { display: flex; justify-content: center; gap: 8px; margin: 0 0 14px; }
+.promo-tags span { font-size: 14px; font-weight: 600; padding: 4px 14px; border-radius: 999px; background: #f3c98b; color: #4a1a14; }
+.promo-verse { font-family: var(--font-display); font-size: 14.5px; line-height: 1.7; color: #f6dcb4; margin: 0 0 4px; }
+.promo-ref { font-size: 12.5px; color: #e0b98a; margin: 0 0 16px; }
+.promo-church { font-family: var(--font-display); font-size: 17px; margin: 0 0 16px; color: #fff6e6; }
+.promo-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.promo-actions a, .promo-actions button { font: inherit; font-size: 15px; font-weight: 500; padding: 10px 16px; border-radius: 8px; cursor: pointer; text-decoration: none; }
+.promo-go { background: #f3c98b; color: #4a1a14; border: none; }
+.promo-close { background: transparent; color: #fbf1e2; border: 1px solid rgba(251, 241, 226, .5); }
+.promo-x { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(0,0,0,.28); color: #fff; font-size: 18px; cursor: pointer; z-index: 2; }
+.promo-foot { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: rgba(0,0,0,.25); font-size: 13.5px; }
+.promo-foot label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #f6dcb4; }
+.promo-foot button { font: inherit; font-size: 13.5px; background: none; border: none; color: #fbf1e2; cursor: pointer; text-decoration: underline; }
+@media (prefers-reduced-motion: no-preference) { dialog.promo[open] .promo-card { animation: promoIn .45s ease-out; } }
+@keyframes promoIn { from { transform: translateY(16px) scale(.98); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (max-width: 380px) { .promo-title { font-size: 34px; } .promo-body { padding: 4px 18px 18px; } }
+
 footer { background: var(--night); color: #cfd5dc; padding: 40px 0; font-size: 14px; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
 footer b { font-family: var(--font-display); color: #f4efe6; font-size: 17px; }
@@ -848,6 +879,70 @@ var ALBUMS = window.ALBUMS || [];
     document.getElementById("next-place").textContent = best.e.place;
   }
   try { update(); setInterval(update, 60000); } catch (e) {}
+})();
+</script>
+
+<!-- ===== 행사 팝업: 추수감사주일 (PROMO 설정은 아래 스크립트에서) ===== -->
+<dialog class="promo" id="promo" aria-labelledby="promo-title">
+  <div class="promo-card">
+    <button class="promo-x" type="button" id="promo-x" aria-label="닫기">✕</button>
+    <svg class="promo-art" viewBox="0 0 420 150" aria-hidden="true">
+      <defs>
+        <radialGradient id="pg" cx="50%" cy="100%" r="70%"><stop offset="0" stop-color="#ffd58f" stop-opacity=".9"/><stop offset="1" stop-color="#ffd58f" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="420" height="150" fill="url(#pg)"/>
+      <g fill="none" stroke="#f3c98b" stroke-width="2.2" stroke-linecap="round">
+        <path d="M210 150 C208 110 206 80 210 38"/><path d="M196 150 C192 116 184 92 170 60"/><path d="M224 150 C228 116 236 92 250 60"/>
+        <path d="M182 150 C172 124 156 108 136 92"/><path d="M238 150 C248 124 264 108 284 92"/>
+      </g>
+      <g fill="#f3c98b">
+        <ellipse cx="210" cy="34" rx="6" ry="11"/><ellipse cx="203" cy="50" rx="5" ry="10" transform="rotate(-25 203 50)"/><ellipse cx="217" cy="50" rx="5" ry="10" transform="rotate(25 217 50)"/><ellipse cx="203" cy="66" rx="5" ry="10" transform="rotate(-25 203 66)"/><ellipse cx="217" cy="66" rx="5" ry="10" transform="rotate(25 217 66)"/>
+        <ellipse cx="168" cy="56" rx="5" ry="10" transform="rotate(-30 168 56)"/><ellipse cx="162" cy="70" rx="4.5" ry="9" transform="rotate(-55 162 70)"/><ellipse cx="176" cy="72" rx="4.5" ry="9" transform="rotate(-5 176 72)"/>
+        <ellipse cx="252" cy="56" rx="5" ry="10" transform="rotate(30 252 56)"/><ellipse cx="258" cy="70" rx="4.5" ry="9" transform="rotate(55 258 70)"/><ellipse cx="244" cy="72" rx="4.5" ry="9" transform="rotate(5 244 72)"/>
+        <ellipse cx="134" cy="88" rx="4.5" ry="9" transform="rotate(-50 134 88)"/><ellipse cx="286" cy="88" rx="4.5" ry="9" transform="rotate(50 286 88)"/>
+      </g>
+      <g fill="#e07a3a" opacity=".85"><path d="M60 40 l10 -8 l4 10 l10 2 l-8 8 l2 10 l-10 -4 l-8 6 l0 -10 l-8 -6z"/><path d="M350 28 l8 -6 l3 8 l8 2 l-6 6 l2 8 l-8 -3 l-7 5 l0 -8 l-6 -5z"/><path d="M372 98 l6 -5 l3 6 l6 1 l-5 5 l1 6 l-6 -2 l-5 4 l0 -6 l-4 -4z" opacity=".7"/><path d="M36 104 l6 -5 l3 6 l6 1 l-5 5 l1 6 l-6 -2 l-5 4 l0 -6 l-4 -4z" opacity=".7"/></g>
+    </svg>
+    <div class="promo-body">
+      <p class="promo-kicker">THANKSGIVING SUNDAY 2026</p>
+      <h2 class="promo-title" id="promo-title">추수감사축제</h2>
+      <p class="promo-sub">찬양과 간증으로 드리는 감사의 예배</p>
+      <div class="promo-when">
+        <b>11월 22일 주일 · 오후 1시 30분</b>
+        <span>2층 본당 · 165 Main St. Little Ferry</span>
+      </div>
+      <div class="promo-tags"><span>찬양</span><span>간증</span><span>감사</span></div>
+      <p class="promo-verse">“감사함으로 그의 문에 들어가며<br>찬송함으로 그의 궁정에 들어가서<br>그에게 감사하며 그의 이름을 송축할지어다”</p>
+      <p class="promo-ref">시편 100편 4절</p>
+      <p class="promo-church">미주제일장로교회</p>
+      <div class="promo-actions">
+        <a class="promo-go" href="#visit" id="promo-go">오시는 길</a>
+        <button class="promo-close" type="button" id="promo-close">닫기</button>
+      </div>
+    </div>
+    <div class="promo-foot">
+      <label for="promo-today"><input type="checkbox" id="promo-today"> 오늘 하루 보지 않기</label>
+      <button type="button" id="promo-close2">닫기</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* 행사 팝업 설정: 행사가 끝나면 end 이후 자동으로 안 보입니다. 다음 행사 때 내용만 바꾸면 됩니다. */
+var PROMO = { id: "thanksgiving-2026", end: "2026-11-22T15:30:00-05:00" };
+(function () {
+  var dlg = document.getElementById("promo"); if (!dlg || !PROMO) return;
+  if (Date.now() > new Date(PROMO.end).getTime()) return;
+  var key = "promo-hide-" + PROMO.id, today = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  try { if (localStorage.getItem(key) === today) return; } catch (e) {}
+  function close() {
+    try { if (document.getElementById("promo-today").checked) localStorage.setItem(key, today); } catch (e) {}
+    if (dlg.close) dlg.close(); else dlg.removeAttribute("open");
+  }
+  ["promo-x", "promo-close", "promo-close2"].forEach(function (id) { document.getElementById(id).addEventListener("click", close); });
+  document.getElementById("promo-go").addEventListener("click", function () { close(); });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) close(); });
+  setTimeout(function () { try { dlg.showModal(); } catch (e) { dlg.setAttribute("open", ""); } }, 600);
 })();
 </script>
 </body>
