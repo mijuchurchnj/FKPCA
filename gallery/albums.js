@@ -6,7 +6,8 @@ window.ALBUMS = [
   "date": "2026-10-18",
   "photos": [
    "gallery/2026-10-18-communion/01.jpg",
-   "gallery/2026-10-18-communion/02.jpg"
+   "gallery/2026-10-18-communion/02.jpg",
+   "gallery/2026-10-18-communion/03.jpg"
   ]
  },
  {
