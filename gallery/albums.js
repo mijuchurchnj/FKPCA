@@ -2,6 +2,17 @@
    { title: "앨범 이름", date: "YYYY-MM-DD", photos: ["gallery/폴더/01.jpg", ...] } */
 window.ALBUMS = [
  {
+  "title": "장로님 가정 이사 감사예배",
+  "date": "2026-08-31",
+  "photos": [
+   "gallery/2026-08-31-housewarming/01.jpg",
+   "gallery/2026-08-31-housewarming/02.jpg",
+   "gallery/2026-08-31-housewarming/03.jpg",
+   "gallery/2026-08-31-housewarming/04.jpg",
+   "gallery/2026-08-31-housewarming/05.jpg"
+  ]
+ },
+ {
   "title": "담임목사님과 장로님 환갑 축하",
   "date": "2026-08-09",
   "photos": [
