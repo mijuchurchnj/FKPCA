@@ -13,6 +13,13 @@ window.ALBUMS = [
   ]
  },
  {
+  "title": "26년 에덴목장 헌신예배",
+  "date": "2026-08-31",
+  "photos": [
+   "gallery/2026-08-31-eden/01.jpg"
+  ]
+ },
+ {
   "title": "담임목사님과 장로님 환갑 축하",
   "date": "2026-08-09",
   "photos": [
