@@ -5,6 +5,17 @@
      images: ["board/files/사진.jpg"], links: [["링크 이름", "https://..."]] } */
 window.POSTS = [
  {
+  "id": "2026-daniel-prayer",
+  "date": "2026-11-13",
+  "category": "공지",
+  "title": "2026 다니엘기도회 영상으로 은혜 받읍시다!",
+  "author": "양영철 목사",
+  "pinned": false,
+  "body": [
+   "현재 한국 오륜교회에서 진행되고 있는 2026 다니엘기도회 영상을 카톡방을 통해 올리고 있습니다. 시간을 내셔서 꼭 보시고 은혜 받으시기 바랍니다."
+  ]
+ },
+ {
   "id": "2026-thanksgiving",
   "date": "2026-11-12",
   "category": "공지",
