@@ -761,7 +761,9 @@ var NEWS = [
    - 맨 위에 새 칼럼을 추가하면 가장 최근 칼럼이 펼쳐진 채로 보입니다.
    - body: 문단 배열, **굵게** 표시 가능
    ================================================================ */
-var COLUMNS = window.COLUMNS || [];
+/* 예약 게시: 날짜가 오늘(뉴저지 시간)보다 뒤인 칼럼·게시글은 그날이 되면 자동으로 보입니다. */
+var TODAY_NY = (function () { try { return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" }); } catch (e) { return new Date().toISOString().slice(0, 10); } })();
+var COLUMNS = (window.COLUMNS || []).filter(function (c) { return c.date <= TODAY_NY; });
 
 /* ================================================================
    매주 바꾸는 곳 ② 갤러리 → gallery/albums.js 파일에 있습니다.
@@ -861,7 +863,7 @@ var ALBUMS = window.ALBUMS || [];
   });
 
   // 게시판 그리기
-  var POSTS = (window.POSTS || []).slice().sort(function (a, b) { return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (a.date < b.date ? 1 : -1); });
+  var POSTS = (window.POSTS || []).filter(function (p) { return p.date <= TODAY_NY; }).sort(function (a, b) { return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (a.date < b.date ? 1 : -1); });
   var bList = document.getElementById("board-list"), bCats = document.getElementById("board-cats"), bCat = null;
   var CATS = ["공지", "선교 편지", "자료", "나눔"];
   function drawCats() {
