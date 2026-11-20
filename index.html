@@ -248,6 +248,7 @@ section[id] { scroll-margin-top: 64px; }
 .sample { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--line); color: var(--muted); }
 
 .column-body { padding: 18px 22px 10px; border-top: 1px solid var(--line); max-width: none; }
+.column-body .col-img { display: block; width: 100%; max-width: 760px; height: auto; border-radius: 10px; margin: 0 0 20px; }
 .column-body .col-sub { color: var(--muted); font-family: var(--font-display); font-size: 18px; margin: 0 0 18px; }
 .column-body .col-h { font-family: var(--font-display); font-size: 19px; margin: 26px 0 10px; max-width: 34em; }
 .column-body p { max-width: 40em; font-size: 16.5px; line-height: 1.9; }
@@ -852,6 +853,7 @@ var ALBUMS = window.ALBUMS || [];
     s.appendChild(el("span", "title", fmtDate(cdata.date) + (cdata.author ? " · " + cdata.author : "")));
     d.appendChild(s);
     var c = el("div", "column column-body");
+    if (cdata.image) { var ci = el("img", "col-img"); ci.src = cdata.image; ci.alt = cdata.title + (cdata.subtitle ? " — " + cdata.subtitle : ""); ci.loading = "lazy"; c.appendChild(ci); }
     if (cdata.subtitle) c.appendChild(el("p", "col-sub", cdata.subtitle));
     cdata.body.forEach(function (p) { if (p.indexOf("## ") === 0) c.appendChild(el("h4", "col-h", p.slice(3))); else c.appendChild(rich("p", p)); });
     d.appendChild(c);
