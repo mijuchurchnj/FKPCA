@@ -5,6 +5,7 @@ window.ALBUMS = [
   "title": "26년 추수감사축제",
   "date": "2026-11-22",
   "photos": [
+   "gallery/2026-11-22-thanksgiving/01.jpg",
    "gallery/2026-11-22-thanksgiving/02.jpg",
    "gallery/2026-11-22-thanksgiving/03.jpg",
    "gallery/2026-11-22-thanksgiving/04.jpg",
@@ -12,7 +13,10 @@ window.ALBUMS = [
    "gallery/2026-11-22-thanksgiving/06.jpg",
    "gallery/2026-11-22-thanksgiving/07.jpg",
    "gallery/2026-11-22-thanksgiving/08.jpg",
-   "gallery/2026-11-22-thanksgiving/10.jpg"
+   "gallery/2026-11-22-thanksgiving/09.jpg",
+   "gallery/2026-11-22-thanksgiving/10.jpg",
+   "gallery/2026-11-22-thanksgiving/11.jpg",
+   "gallery/2026-11-22-thanksgiving/12.jpg"
   ]
  },
  {
